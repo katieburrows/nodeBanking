@@ -2,58 +2,101 @@ var fs = require("fs");
 
 var operator = process.argv[2];
 var number = process.argv[3];
-var sum = 0;
 
 
-var total = function(){
+switch(operator){
+    case "total":
+        total();
+        break;
+
+    case "deposit":
+        deposit();
+        break;
+
+    case "withdraw":
+        withdraw();
+        break;
+
+    case "lotto":
+        lotto();
+        break;
+
+    default:
+        return console.log(`please enter a valid operator: 'total', 'deposit', 'withdraw', or 'lotto'`);
+}
+
+
+function total(){
     fs.readFile("bank.txt", "utf8", function(error, data){
         if (error) {
             return console.log(error);
         }
 
-        var dataArray = data.split(", ");
-        
-        for (var i = 0; i < dataArray.length; i++){
-            var num = parseFloat(dataArray[i]);
+        data = data.split(", ");
+        var sum = 0;
+
+        for (var i = 0; i < data.length; i++){
+            var num = parseFloat(data[i]);
             sum += num;
             
         }
-        return sum;
+        console.log(`Current balance: ${sum.toFixed(2)}`);
        
     });
 }
 
 
 
-var deposit = function(){
-    
+function deposit(){
+    fs.appendFile("bank.txt", ", " + number, function(error){
+        if (error){
+            return console.log(error);
+        }
+        else {
+            console.log(`You have deposited: ${number}.`)
+            total();
+
+        }
+    });
 }
 
-var withdraw = function(){
-    
+function withdraw(){
+    fs.appendFile("bank.txt", ", -" + number, function(error){
+        if (error){
+            return console.log(error);
+        }
+        else {
+            console.log(`You have withdrawn ${number}.`);
+            total();
+        }
+    });
 }
 
-var lotto = function(){
-    
+function lotto(){
+    fs.appendFile("bank.txt", ", -.25", function(error){
+        if (error){
+            return console.log(error);
+        }
+        else {
+           var randomNumber = Math.floor(Math.random() * 11);
+           if (randomNumber === 4){
+               fs.appendFile("bank.txt", ", 2", function(error){
+                   if (error){
+                       return console.log(error);
+                   }
+                   else {
+                       console.log(`You won!  $2.00 has been added to your account!`);
+                   }
+               })
+           } 
+           else {
+               console.log(`You lost the lotto.  Better luck next time!`);
+           }
+        }
+    })
 }
 
 
 
 
 
-switch(operator){
-    case total:
-        total();
-        break;
-    case deposit:
-        deposit();
-        break;
-    case withdraw:
-        withdraw();
-        break;
-    case lotto:
-        lotto();
-        break;
-    default:
-        return console.log(`please enter a valid operator: 'total', 'deposit', 'withdraw', or 'lotto'`);
-}
